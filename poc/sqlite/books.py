@@ -35,10 +35,20 @@ TABLE_SALTTIGER_BOOKS_DML_SELECT = f'''
 select id, name, press, status from {TABLE_SALTTIGER_BOOKS}
 '''
 
+
+TABLE_SALTTIGER_BOOKS_DML_UPDATE = f'''
+update {TABLE_SALTTIGER_BOOKS} set name = '555' where name = '333'
+'''
+
+TABLE_SALTTIGER_BOOKS_DML_DELETE = f'''
+delete from {TABLE_SALTTIGER_BOOKS}
+'''
+
 def show_sqlite_version(conn):
     cursor = conn.cursor()
     sqlite_select_query = "select sqlite_version();"
     cursor.execute(sqlite_select_query)
+    print(f'select: rowcount {cursor.rowcount}, lastrowid {cursor.lastrowid}')
     record = cursor.fetchall()
     print('SQLite Database Version is: ', record)
     cursor.close
@@ -46,8 +56,8 @@ def show_sqlite_version(conn):
 
 def create_tables(conn):
     cursor = conn.cursor()
-    ret = cursor.execute(TABLE_SALTTIGER_BOOKS_DDL)
-    print(f'return {ret}')
+    cursor.execute(TABLE_SALTTIGER_BOOKS_DDL)
+    print(f'create table: rowcount {cursor.rowcount}, lastrowid {cursor.lastrowid}')
     conn.commit()
     cursor.close
 
@@ -56,16 +66,16 @@ def create_tables(conn):
 
 def insert_records(conn):
     cursor = conn.cursor()
-    ret = cursor.execute(TABLE_SALTTIGER_BOOKS_DML_INSERT)
-    print(f'return {ret}')
+    cursor.execute(TABLE_SALTTIGER_BOOKS_DML_INSERT)
+    print(f'insert: rowcount {cursor.rowcount}, lastrowid {cursor.lastrowid}')
     conn.commit()
     print(f'Record insert successfully into {TABLE_SALTTIGER_BOOKS}')
 
 
 def read_records(conn):
     cursor = conn.cursor()
-    ret = cursor.execute(TABLE_SALTTIGER_BOOKS_DML_SELECT)
-    print(f'return {ret}')
+    cursor.execute(TABLE_SALTTIGER_BOOKS_DML_SELECT)
+    print(f'select: rowcount {cursor.rowcount}, lastrowid {cursor.lastrowid}')
     records = cursor.fetchall()
     print('id | name | press | status');
     for r in records:
@@ -75,11 +85,21 @@ def read_records(conn):
 
 
 def update_records(conn):
-    pass
+    cursor = conn.cursor()
+    cursor.execute(TABLE_SALTTIGER_BOOKS_DML_UPDATE)
+    print(f'update: rowcount {cursor.rowcount}, lastrowid {cursor.lastrowid}')
+    conn.commit()
+    print(f'Record update successfully into {TABLE_SALTTIGER_BOOKS}')
+
 
 
 def delete_records(conn):
-    pass
+    cursor = conn.cursor()
+    cursor.execute(TABLE_SALTTIGER_BOOKS_DML_DELETE)
+    print(f'delete: rowcount {cursor.rowcount}, lastrowid {cursor.lastrowid}')
+    conn.commit()
+    print(f'Record delete successfully into {TABLE_SALTTIGER_BOOKS}')
+
 
 def main():
     if not os.path.exists(DB_FOLDER):
@@ -92,6 +112,10 @@ def main():
 
         create_tables(sqliteConnection)
         insert_records(sqliteConnection)
+        read_records(sqliteConnection)
+        update_records(sqliteConnection)
+        read_records(sqliteConnection)
+        delete_records(sqliteConnection)
         read_records(sqliteConnection)
 
         show_sqlite_version(sqliteConnection)
