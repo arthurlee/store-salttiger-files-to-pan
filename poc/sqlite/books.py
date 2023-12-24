@@ -9,7 +9,7 @@ TABLE_SALTTIGER_BOOKS_DDL = f'''CREATE TABLE IF NOt EXISTS {TABLE_SALTTIGER_BOOK
     name                varchar(50),
     isbn                nchar(13),
     publish_date        DATE,
-    presss              varchar(50),
+    press               varchar(50),
     salttiger_url       varchar(50),
     official_url        varchar(50),
     coverpage_url       varchar(50),
@@ -22,6 +22,15 @@ TABLE_SALTTIGER_BOOKS_DDL = f'''CREATE TABLE IF NOt EXISTS {TABLE_SALTTIGER_BOOK
 
 )'''
 
+TABLE_SALTTIGER_BOOKS_DML_INSERT = f'''
+INSERT INTO {TABLE_SALTTIGER_BOOKS}(id, name, press, status) 
+values
+      (1, '111', '111', 'new')
+    , (2, '222', '222', 'new')
+    , (3, '333', '333', 'new')
+    ;
+'''
+
 def show_sqlite_version(conn):
     cursor = conn.cursor()
     sqlite_select_query = "select sqlite_version();"
@@ -29,14 +38,23 @@ def show_sqlite_version(conn):
     record = cursor.fetchall()
     print('SQLite Database Version is: ', record)
     cursor.close
-     
+
+
 def create_tables(conn):
     cursor = conn.cursor()
     cursor.execute(TABLE_SALTTIGER_BOOKS_DDL)
-    conn.submit()
-    # cursor.close
+    conn.commit()
+    cursor.close
 
     print(f'table {TABLE_SALTTIGER_BOOKS} is created')
+
+
+def insert_records(conn):
+    cursor = conn.cursor()
+    cursor.execute(TABLE_SALTTIGER_BOOKS_DML_INSERT)
+    conn.commit()
+    print(f'Record insert successfully into {TABLE_SALTTIGER_BOOKS}')
+
 
 def main():
     try:
@@ -46,6 +64,9 @@ def main():
 
         sqliteConnection = sqlite3.connect(DATABASE_NAME)    
         print('Database created and Successfully Connected to SQLite')
+
+        create_tables(sqliteConnection)
+        insert_records(sqliteConnection)
 
         show_sqlite_version(sqliteConnection)
 
