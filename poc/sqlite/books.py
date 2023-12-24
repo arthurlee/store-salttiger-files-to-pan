@@ -31,6 +31,10 @@ values
     ;
 '''
 
+TABLE_SALTTIGER_BOOKS_DML_SELECT = f'''
+select id, name, press, status from {TABLE_SALTTIGER_BOOKS}
+'''
+
 def show_sqlite_version(conn):
     cursor = conn.cursor()
     sqlite_select_query = "select sqlite_version();"
@@ -42,7 +46,8 @@ def show_sqlite_version(conn):
 
 def create_tables(conn):
     cursor = conn.cursor()
-    cursor.execute(TABLE_SALTTIGER_BOOKS_DDL)
+    ret = cursor.execute(TABLE_SALTTIGER_BOOKS_DDL)
+    print(f'return {ret}')
     conn.commit()
     cursor.close
 
@@ -51,22 +56,43 @@ def create_tables(conn):
 
 def insert_records(conn):
     cursor = conn.cursor()
-    cursor.execute(TABLE_SALTTIGER_BOOKS_DML_INSERT)
+    ret = cursor.execute(TABLE_SALTTIGER_BOOKS_DML_INSERT)
+    print(f'return {ret}')
     conn.commit()
     print(f'Record insert successfully into {TABLE_SALTTIGER_BOOKS}')
 
 
-def main():
-    try:
-        if not os.path.exists(DB_FOLDER):
-            print(f'create folder {DB_FOLDER}')
-            os.mkdir(DB_FOLDER)
+def read_records(conn):
+    cursor = conn.cursor()
+    ret = cursor.execute(TABLE_SALTTIGER_BOOKS_DML_SELECT)
+    print(f'return {ret}')
+    records = cursor.fetchall()
+    print('id | name | press | status');
+    for r in records:
+        print(f'{r[0]}|{r[1]}|{r[2]}|{r[3]}')
 
-        sqliteConnection = sqlite3.connect(DATABASE_NAME)    
+    cursor.close
+
+
+def update_records(conn):
+    pass
+
+
+def delete_records(conn):
+    pass
+
+def main():
+    if not os.path.exists(DB_FOLDER):
+        print(f'create folder {DB_FOLDER}')
+        os.mkdir(DB_FOLDER)
+
+    try:
+        sqliteConnection = sqlite3.connect(DATABASE_NAME, timeout=20)    
         print('Database created and Successfully Connected to SQLite')
 
         create_tables(sqliteConnection)
         insert_records(sqliteConnection)
+        read_records(sqliteConnection)
 
         show_sqlite_version(sqliteConnection)
 
