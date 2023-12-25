@@ -51,6 +51,14 @@ class TestSQlite(unittest.TestCase):
         '''):
             self.assertEqual(rowcount, 5)
             self.assertEqual(lastrowid, 5)
+            
+    def test_query_all(self):
+        db_conn = self.__class__.db_conn
+        records = db_conn.queryAll('select * from tests')
+        self.assertEqual(len(records), 5)
+        self.assertEqual(records[0].id, 1)
+        self.assertEqual(records[0].name, 'one')
+        
     
     if __name__ == '__main__':
         unittest.main()

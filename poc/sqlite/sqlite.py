@@ -1,5 +1,6 @@
 import sqlite3
 import os
+import record
 
 
 class SQLiteConnection:
@@ -39,6 +40,23 @@ class SQLiteConnection:
         yield cursor
         self.connection.commit()
 
+    def convertToRecords(self, rows, names):
+        records = []
+        for row in rows:
+            r = record.Record()
+            for index,name in enumerate(names):
+                r[name] = row[index]
+            records.append(r)
+            
+        print(records)
+        return records
+
+    def queryAll(self, sql):
+        for cursor in self.db_execute(sql):
+          rows = cursor.fetchall()
+          names = list(map(lambda x: x[0], cursor.description))
+          return self.convertToRecords(rows, names)
+      
     # query the single record
     def querySingle(self, sql):
         for cursor in self.db_execute(sql):
@@ -48,7 +66,8 @@ class SQLiteConnection:
     # query the single value
     def querySingleValue(self, sql):
         return self.querySingle(sql)[0]
-
+    
+      
     def getSqliteVersion(self):
         version = self.querySingleValue("select sqlite_version();")
         print(f"SQLite Database Version is: {version}")
