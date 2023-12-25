@@ -40,6 +40,13 @@ class SQLiteConnection:
         yield cursor
         self.connection.commit()
 
+    def db_executemany(self, sql, data):
+        cursor = self.connection.cursor()
+        cursor.executemany(sql, data)
+        yield cursor
+        self.connection.commit()
+
+
     def convertToRecords(self, rows, names):
         records = []
         for row in rows:
@@ -48,7 +55,6 @@ class SQLiteConnection:
                 r[name] = row[index]
             records.append(r)
             
-        print(records)
         return records
 
     def queryAll(self, sql):
@@ -77,6 +83,11 @@ class SQLiteConnection:
         for cursor in self.db_execute(sql):
           print(f'execute: rowcount {cursor.rowcount}, lastrowid {cursor.lastrowid}')        
           yield cursor.rowcount, cursor.lastrowid
+
+    def executemany(self, sql, data):
+        for cursor in self.db_executemany(sql, data):
+          print(f'execute: rowcount {cursor.rowcount}, lastrowid {cursor.lastrowid}')        
+          yield cursor.rowcount, cursor.lastrowid
           
     def create_table(self, sql):
         for rowcount,lastrowid in self.execute(sql):
@@ -85,25 +96,12 @@ class SQLiteConnection:
     def insert(self, sql):
         yield from self.execute(sql)
         
+    def insert_many(self, sql, data):
+        yield from self.executemany(sql, data)
+        
     def update(self, sql):
         yield from self.execute(sql)
         
     def delete(self, sql):
         yield from self.execute(sql)
 
-
-def main():
-    try:
-        sqlite = SQLiteConnection('db', 'test.db')
-        sqlite.connect()
-        sqlite.getSqliteVersion()
-    except sqlite3.Error as error:
-        print("Error while connecting to sqlite", error)
-    finally:
-        if sqlite:
-            sqlite.close()
-            print("The sqlite connection is closed")
-
-
-if __name__ == "__main__":
-    main()
