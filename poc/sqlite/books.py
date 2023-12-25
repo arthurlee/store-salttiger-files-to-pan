@@ -4,7 +4,7 @@ import os
 DB_FOLDER = os.path.abspath('database')
 DATABASE_NAME = f'{DB_FOLDER}/salttiger.db'
 TABLE_SALTTIGER_BOOKS = 'salttiger_books'
-TABLE_SALTTIGER_BOOKS_DDL = f'''CREATE TABLE IF NOt EXISTS {TABLE_SALTTIGER_BOOKS}(
+TABLE_SALTTIGER_BOOKS_DDL = f'''CREATE TABLE IF NOT EXISTS {TABLE_SALTTIGER_BOOKS}(
     id                integer,
     name                varchar(50),
     isbn                nchar(13),
